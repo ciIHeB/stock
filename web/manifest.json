@@ -1,6 +1,6 @@
 {
-    "name": "main_screen_ui",
-    "short_name": "main_screen_ui",
+    "name": "trademasterapp",
+    "short_name": "trademasterapp",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

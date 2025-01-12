@@ -235,7 +235,7 @@ class MainScreen extends StatelessWidget {
             // Bottom Navigation
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
