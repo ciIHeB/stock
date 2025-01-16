@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trademasterapp/widgets/custom_drawer.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,16 +29,16 @@ class MainScreen extends StatelessWidget {
       key: _scaffoldKey, // Assign the key to the Scaffold
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text('Main', style: GoogleFonts.roboto(fontSize: 20)),
+        title: Text('Main', style: GoogleFonts.roboto(fontSize: 20,color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner),
+            icon: Icon(Icons.qr_code_scanner,color: Colors.white,),
             onPressed: () {
               // Add action for QR Code Scanner
             },
           ),
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.menu, color: Colors.white,),
             onPressed: () {
               // Open the menu from the right using the GlobalKey
               _scaffoldKey.currentState?.openEndDrawer();
@@ -44,37 +46,7 @@ class MainScreen extends StatelessWidget {
           ),
         ],
       ),
-      endDrawer: Drawer( // Use `endDrawer` to open the menu from the right
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,14 +59,14 @@ class MainScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Welcome USER OF 71',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.blue),
                   ),
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Last Data Upload: Not Available'),
-                      Text('Last Data Download: 22/07/2024 08:03 PM'),
+                      Text('Last Data Upload: '),
+                      Text('Last Data Download:'),
                     ],
                   ),
                 ],
@@ -150,7 +122,7 @@ class MainScreen extends StatelessWidget {
                         children: [
                           Text('Available Val'),
                           Text(
-                            '-17,250.918',
+                            '1,250.918',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -241,7 +213,7 @@ class MainScreen extends StatelessWidget {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {},
-                    icon: Icon(Icons.phone),
+                    icon: Icon(Icons.phone, color: Colors.white,),
                     label: Text('Actual Calls'),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal),
@@ -259,6 +231,7 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ),
+      endDrawer: const CustomDrawer(),
     );
   }
 }
