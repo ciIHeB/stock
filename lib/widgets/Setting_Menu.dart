@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+class SettingMenu extends StatelessWidget {
+  const SettingMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,31 +37,37 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
-          _buildDrawerItem(Icons.home, 'HOME'),
-         // _buildDrawerItem(Icons.add_circle_outline, 'EXTRA'),
-          _buildDrawerItem(Icons.settings, 'SETTING'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: _buildDrawerItem(Icons.home, 'HOME', context),
+              ),
+              Expanded(
+                child: _buildDrawerItem(Icons.settings, 'SETTING', context),
+              ),
+            ],
+          ),
           const Divider(),
-          _buildDrawerItem(Icons.inventory, 'My Stock'),
-          _buildDrawerItem(Icons.receipt, 'Outstanding Invoice'),
-          _buildDrawerItem(Icons.route, 'Start Journey'),
-          _buildDrawerItem(Icons.shop, 'Stock Request'),
-          _buildDrawerItem(Icons.sync, 'Synchronization'),
-          _buildDrawerItem(Icons.upload_file, 'Auto UnLoad'),
-          _buildDrawerItem(Icons.cloud_upload, 'Upload Request'),
-          _buildDrawerItem(Icons.file_upload, 'Manual Upload'),
-          const Divider(),
-          _buildDrawerItem(Icons.logout, 'Sign out'),
-          //_buildDrawerItem(Icons.timer, 'Break Time'),
+          _buildDrawerItem(Icons.bolt, 'About', context),
+          _buildDrawerItem(Icons.settings, 'Setting', context),
+
         ],
       ),
     );
   }
 
-  Widget _buildDrawerItem(IconData icon, String title) {
+  Widget _buildDrawerItem(IconData icon, String title, BuildContext context) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
-      onTap: () {},
+      onTap: () {
+        if (title == 'Setting') {
+          Navigator.pushNamed(context, '/invoice'); // Navigate to InvoicePage
+        } else {
+          // Handle other navigation if needed
+        }
+      },
     );
   }
 }

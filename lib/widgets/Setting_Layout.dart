@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trademasterapp/widgets/Invoice_layout.dart';
 import 'package:trademasterapp/widgets/Main_Menu.dart';
-import 'package:trademasterapp/widgets/Setting_Layout.dart';
 import 'package:trademasterapp/widgets/Setting_Menu.dart';
 
 void main() => runApp(MyApp());
@@ -15,20 +14,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      home: SettingLayout(),
       routes: {
         '/invoice': (context) => InvoiceLayout(),
-        '/settingmenu': (context) => SettingMenu(),// Register the route to the InvoicePage
+        '/setting': (context) => SettingLayout(),// Register the route to the InvoicePage
       },
     );
   }
 }
 
-class MainScreen extends StatelessWidget {
+class SettingLayout extends StatelessWidget {
   // Remove the 'const' here, since GlobalKey doesn't need to be constant
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  MainScreen({super.key});
+  SettingLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -397,7 +396,7 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ),
-      endDrawer: const MainMenu(),
+      endDrawer: const SettingMenu(),
     );
   }
 }
