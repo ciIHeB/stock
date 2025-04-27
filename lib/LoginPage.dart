@@ -17,11 +17,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email!.isEmpty) {
       return 'Can\'t be empty';
     }
-    if (email.length < 4) {
+    if (email.length < 2) {
       return 'Too short';
     }
     if (!RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        r"^[a-zA-Z]")
         .hasMatch(email)) {
       return 'Invalid Email Id';
     }
@@ -61,30 +61,29 @@ class _LoginScreenState extends State<LoginScreen> {
         //title: const Text("Login Page"),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 100.0),
+        padding: const EdgeInsets.only(top: 90.0),
+
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
               Center(
                 child: Image(
-
                    // width: 200,
                    // height: 150,
-
                     image: AssetImage ('images/img.png')),
               ),
               Padding(
                 //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
                 padding: const EdgeInsets.only(
-                    top: 15.0, bottom: 5.0, left: 30.0, right: 30.0),
+                    top: 90.0, bottom: 5.0, left: 30.0, right: 30.0),
                 child: TextFormField(
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Login',
                     prefixIcon: Icon(Icons.email),
-                    hintText: 'Enter valid email id',
+                    hintText: 'Enter valid Login id',
                     // use the getter variable defined above
                   ),
                   validator: validateEmail,
