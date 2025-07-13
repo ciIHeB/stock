@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:trademasterapp/main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -10,20 +12,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool passToggle = true;
-  String _email = '';
+  String _username = '';
+  String _password = '';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String? validateEmail(String? email) {
-    if (email!.isEmpty) {
+  String? validateUsername(String? username) {
+    if (username!.isEmpty) {
       return 'Can\'t be empty';
     }
-    if (email.length < 2) {
+    if (username.length < 2) {
       return 'Too short';
-    }
-    if (!RegExp(
-        r"^[a-zA-Z]")
-        .hasMatch(email)) {
-      return 'Invalid Email Id';
     }
     // return null if the text is valid
     return null;
@@ -40,16 +38,34 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login Successfully')),
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:3000/api/authMobile/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'HHUserName': _username,
+          'HHUserPassword': _password,
+        }),
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) =>  MainScreen()),
-      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login Successfully')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to login')),
+        );
+      }
     }
   }
 
@@ -78,17 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.only(
                     top: 90.0, bottom: 5.0, left: 30.0, right: 30.0),
                 child: TextFormField(
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.text,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Login',
-                    prefixIcon: Icon(Icons.email),
-                    hintText: 'Enter valid Login id',
+                    labelText: 'Username',
+                    prefixIcon: Icon(Icons.person),
+                    hintText: 'Enter your username',
                     // use the getter variable defined above
                   ),
-                  validator: validateEmail,
+                  validator: validateUsername,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  onChanged: (text) => setState(() => _email = text),
+                  onChanged: (text) => setState(() => _username = text),
                 ),
               ),
               Padding(
@@ -114,6 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: validatePassword,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onChanged: (text) => setState(() => _password = text),
                 ),
               ),
               Container(
@@ -133,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.only(
                     left: 30.0, right: 30.0, top: 10.0, bottom: 10.0),
                 child: FilledButton(
-                  onPressed: _email.isNotEmpty ? _submit : null,
+                  onPressed: _username.isNotEmpty ? _submit : null,
                   child: const Text(
                     'Login',
                     style: TextStyle(color: Colors.white, fontSize: 22),
