@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         '/invoice': (context) => InvoiceLayout(),
-        '/settingmenu': (context) => SettingMenu(),// Register the route to the InvoicePage
+        //'/': (context) => SettingMenu(),// Register the route to the InvoicePage
       },
     );
   }
@@ -37,7 +37,7 @@ class MainScreen extends StatelessWidget {
       key: _scaffoldKey, // Assign the key to the Scaffold
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text('Main', style: GoogleFonts.roboto(fontSize: 20,color: Colors.white)),
+        title: Text('Main', style: GoogleFonts.roboto(fontSize: 30,color: Colors.white)),
         actions: [
           IconButton(
             icon: Icon(Icons.qr_code_scanner,color: Colors.white,),

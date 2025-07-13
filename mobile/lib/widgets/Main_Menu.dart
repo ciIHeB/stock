@@ -12,7 +12,7 @@ class MainMenu extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: Colors.blue,
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
