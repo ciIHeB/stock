@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:trademasterapp/main.dart';
@@ -42,8 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      final String host = kIsWeb ? 'localhost' : '10.0.2.2';
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/authMobile/login'),
+        Uri.parse('http://$host:3000/api/authMobile/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
