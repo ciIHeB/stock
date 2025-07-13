@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "invItem" ALTER COLUMN "ItemImage" SET DATA TYPE TEXT;
