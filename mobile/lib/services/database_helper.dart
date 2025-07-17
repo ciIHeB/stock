@@ -1,75 +1,51 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+import 'package:trademasterapp/data/database.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
 
-  static Database? _database;
+  static AppDatabase? _database;
 
-  Future<Database> get database async {
+  Future<AppDatabase> get database async {
     if (_database != null) return _database!;
-    _database = await _initDatabase();
+    _database = AppDatabase();
     return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'trademaster.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE user(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        password TEXT NOT NULL
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE stock(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item TEXT NOT NULL,
-        qty REAL NOT NULL
-      )
-    ''');
   }
 
   Future<void> saveUser(String username, String password) async {
     final db = await database;
-    await db.insert(
-      'user',
-      {'username': username, 'password': password},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.into(db.users).insert(UsersCompanion.insert(
+          name: username,
+          password: password,
+        ));
   }
 
-  Future<Map<String, dynamic>?> getUser() async {
+  Future<User?> getUser() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('user');
-    if (maps.isNotEmpty) {
-      return maps.first;
+    final users = await db.select(db.users).get();
+    if (users.isNotEmpty) {
+      return users.first;
     }
     return null;
   }
 
   Future<void> saveStock(List<Map<String, dynamic>> stockData) async {
     final db = await database;
-    Batch batch = db.batch();
-    for (var stockItem in stockData) {
-      batch.insert('stock', stockItem,
-          conflictAlgorithm: ConflictAlgorithm.replace);
-    }
-    await batch.commit();
+    await db.batch((batch) {
+      batch.insertAll(
+          db.products,
+          stockData
+              .map((e) => ProductsCompanion.insert(
+                    name: e['item'],
+                    quantity: e['qty'],
+                  ))
+              .toList());
+    });
   }
 
-  Future<List<Map<String, dynamic>>> getStock() async {
+  Future<List<Product>> getStock() async {
     final db = await database;
-    return await db.query('stock');
+    return await db.select(db.products).get();
   }
 }

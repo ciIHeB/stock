@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:trademasterapp/data/database.dart';
 import 'package:trademasterapp/services/database_helper.dart';
 
 class StockPage extends StatefulWidget {
@@ -11,7 +12,7 @@ class StockPage extends StatefulWidget {
 }
 
 class _StockPageState extends State<StockPage> {
-  List<Map<String, dynamic>> _stockData = [];
+  List<Product> _stockData = [];
 
   @override
   void initState() {
@@ -35,8 +36,8 @@ class _StockPageState extends State<StockPage> {
       final List<dynamic> data = jsonDecode(response.body);
       final List<Map<String, dynamic>> stockData = data.map((item) {
         return {
-          'item': item['invItem']['ItemName'],
-          'qty': item['Qty'],
+          'item': item['invItem']['ItemNameLan1'],
+          'qty': item['ReceivedQuantity'],
         };
       }).toList();
 
@@ -66,8 +67,8 @@ class _StockPageState extends State<StockPage> {
         itemBuilder: (context, index) {
           final item = _stockData[index];
           return ListTile(
-            title: Text(item['item']),
-            trailing: Text(item['qty'].toString()),
+            title: Text(item.name),
+            trailing: Text(item.quantity.toString()),
           );
         },
       ),
