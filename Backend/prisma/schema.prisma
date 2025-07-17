@@ -851,7 +851,7 @@ model InvAutoSRHeader {
   SupervisorID         Int
   OwnerID              Int
   WHID                 Int
-  SRNumber             String
+  SRNumber             String    @unique
   SRTypeID             Int
   AutoSRLoadDate       DateTime
   AutoSRDate           DateTime
@@ -864,6 +864,7 @@ model InvAutoSRHeader {
   hhOwner              HhOwner @relation(fields: [OwnerID], references: [OwnerID])
   genSupervisor        GenSupervisor @relation(fields: [SupervisorID], references: [SupervisorID])
   invStore             InvStore @relation(fields: [WHID], references: [StoreID])
+  invAutoSRDetail      InvAutoSRDetail[]
 
   @@map("invAutoSRHeader")
 }
@@ -885,6 +886,7 @@ model InvAutoSRDetail {
 
   // Define the relationships
   invItem                        InvItem @relation(fields: [ItemID], references: [ItemID])
+  invAutoSRHeader                InvAutoSRHeader? @relation(fields: [SRNumber], references: [SRNumber])
 
 
   @@id([ SRNumber, ItemID, ItemStatusID])

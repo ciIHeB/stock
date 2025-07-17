@@ -288,6 +288,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "apps-bounload-add" */ '../views/apps/vanload/approve.vue'), // Corrected component path and chunk name
         meta: { requiresAuth: true },
     },
+    {
+        path: '/apps/vload/add',
+        name: 'VanLoad-add',       
+        component: () => import(/* webpackChunkName: "apps-bounload-add" */ '../views/apps/vanload/add.vue'), // Corrected component path and chunk name
+        meta: { requiresAuth: true },
+    },
       {
         path: '/apps/vuload/add',
         name: 'vanunload-list',

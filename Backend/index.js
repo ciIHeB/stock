@@ -43,6 +43,7 @@ const SecUserGroup = require('./routes/SecUserGroup.routes');
 const createLoad = require('./routes/InvBOStoreLoad.routes');
 const createUnload = require('./routes/InvBOStoreUnload.routes'); // Added for Unload
 const invAutoSRHeader = require('./routes/invAutoSRHeader.routes'); 
+const invStoreTransaction = require('./routes/invStoreTransaction.routes');
 
 
 const app = express();
@@ -92,6 +93,7 @@ app.use('/api/usergroup', SecUserGroup);
 app.use('/api/BoStoreLoad', createLoad);
 app.use('/api/BoStoreUnload', createUnload);
 app.use('/api/AutoLoad', invAutoSRHeader);
+app.use('/api/stock', invStoreTransaction);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

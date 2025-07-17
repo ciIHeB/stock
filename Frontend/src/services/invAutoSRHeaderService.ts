@@ -20,6 +20,15 @@ export default {
             throw error;
         }
     },
+    async getloadItemsDetails(SRNumber) {
+        try {
+            const response = await apiClient.get(`AutoLoad/details/${SRNumber}`); 
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching items:', error);
+            throw error;
+        }
+    },
 
     async createItem(itemData) {
         try {
@@ -48,9 +57,9 @@ export default {
             throw error;
         }
     },
-    async updateItem(id, updatedData) {
+    async updateItem(SRNumber, updatedData) {
         try {
-            const response = await apiClient.put(`AutoLoad/${id}`, updatedData);
+            const response = await apiClient.put(`AutoLoad/${SRNumber}`, updatedData);
             return response.data;
         } catch (error) {
             console.error('Error updating item:', error);
