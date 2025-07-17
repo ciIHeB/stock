@@ -1,16 +1,59 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trademasterapp/widgets/menu/Main_Menu.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:trademasterapp/helpers/database_helper.dart';
 
-class MainScreen extends StatelessWidget {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+class MainScreen extends StatefulWidget 
+{
+  
   MainScreen({super.key});
 
   @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen>
+ {
+  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? _userEmail;
+  String? _lastSync;
+
+
+  @override
+  void initState() {
+    
+    super.initState();
+    _loadLastSync();
+    _loadUser();
+  }
+  Future<void> _loadLastSync() async {
+  final last = await DatabaseHelper.getLastSync();
+  setState(() {
+    if (last != null) {
+      final dt = DateTime.parse(last);
+      _lastSync = '${dt.hour}:${dt.minute.toString().padLeft(2, '0')} - ${dt.day}/${dt.month}';
+    } else {
+      _lastSync = 'Never';
+    }
+  });
+}
+
+
+  Future<void> _loadUser() async {
+    final user = await DatabaseHelper.getUser();
+    setState(() {
+      _userEmail = user != null ? user['email'] : null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -43,7 +86,9 @@ class MainScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Welcome back user x ',
+                      _userEmail != null
+                          ? 'Welcome back $_userEmail'
+                          : 'Welcome back',
                       style: GoogleFonts.roboto(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -60,7 +105,8 @@ class MainScreen extends StatelessWidget {
               elevation: 2,
               child: ListTile(
                 leading: const Icon(Icons.sync, color: Colors.blue),
-                title: const Text('Last sync: 2h ago'),
+                title: Text('Last sync: ${_lastSync ?? 'Loading...'}'),
+
               ),
             ),
             const SizedBox(height: 16),
@@ -94,18 +140,21 @@ class MainScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Row(
-                          children: [
+                       
+                          
                             Text('Collection Plan',
                                 style: GoogleFonts.roboto(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold
+                                    ),
+                                    ),
                           ],
-                        ),
-                      ],
+                        
+                      
                     ),
                   ),
                 ),
@@ -114,16 +163,7 @@ class MainScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Collection Plan
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.map_outlined, color: Colors.orange),
-                SizedBox(width: 8),
-                Text('Visit Today',
-                    style: GoogleFonts.roboto(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
-            ),
+            
             Container(
               height: 200,
               child: SfRadialGauge(
@@ -161,6 +201,16 @@ class MainScreen extends StatelessWidget {
                       ])
                 ],
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.map_outlined, color: Colors.orange),
+                SizedBox(width: 8),
+                Text('Visit Today',
+                    style: GoogleFonts.roboto(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
+              ],
             ),
 
             const SizedBox(height: 24),
@@ -333,58 +383,78 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  Widget _callBox({
-    required String title,
-    required String data1,
-    required String label1,
-    required String data2,
-    required String label2,
-    required Color color,
-  }) {
-    return Container(
-      margin: const EdgeInsets.all(5),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
+ Widget _callBox({
+  required String title,
+  required String data1,
+  required String label1,
+  required String data2,
+  required String label2,
+  required Color color,
+}) {
+  return Container(
+    margin: const EdgeInsets.all(5),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20), // زيادة padding لحماية الجوانب
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data1,
+                  Text(
+                    data1,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(label1,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                  Text(label1, style: const TextStyle(color: Colors.white70)),
+                          color: Colors.white70, fontSize: 14)),
                 ],
               ),
-              Column(
+            ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(data2,
+                  Text(
+                    data2,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(label2,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                  Text(label2, style: const TextStyle(color: Colors.white70)),
+                          color: Colors.white70, fontSize: 14)),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _singleCallBox(String title, String value, Color color) {
     return Container(
