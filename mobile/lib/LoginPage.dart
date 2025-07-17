@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:trademasterapp/main.dart';
+import 'package:trademasterapp/services/database_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -56,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
+        await DatabaseHelper().saveUser(_username, _password);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login Successfully')),
         );

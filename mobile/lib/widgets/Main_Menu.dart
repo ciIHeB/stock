@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trademasterapp/widgets/stock_page.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});
@@ -51,9 +52,10 @@ class MainMenu extends StatelessWidget {
           ),
           const Divider(),
           _buildDrawerItem(Icons.inventory, 'My Stock', context),
+          _buildDrawerItem(Icons.store, 'Stock', context),
           _buildDrawerItem(Icons.receipt, 'Outstanding Invoice', context),
           _buildDrawerItem(Icons.route, 'Start Journey', context),
-          _buildDrawerItem(Icons.shop, 'Stock Request', context),  // Add this to navigate to InvoicePage
+          _buildDrawerItem(Icons.shop, 'Stock Request', context), // Add this to navigate to InvoicePage
           _buildDrawerItem(Icons.sync, 'Synchronization', context),
           _buildDrawerItem(Icons.upload_file, 'Auto UnLoad', context),
           _buildDrawerItem(Icons.cloud_upload, 'Upload Request', context),
@@ -76,7 +78,12 @@ class MainMenu extends StatelessWidget {
         if (title == 'SETTING') {
           Navigator.pushNamed(context, '/settingmenu');
         }
-
+        if (title == 'Stock') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const StockPage()),
+          );
+        }
       },
     );
   }
