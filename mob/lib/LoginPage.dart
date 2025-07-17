@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:trademasterapp/main.dart';
 import 'package:trademasterapp/MainPage.dart';
 import 'dart:convert';
+import 'package:trademasterapp/helpers/database_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Update this URL to match your backend server
   static const String baseUrl =
-      'http://localhost:3000'; // Change this to your actual server URL
+      'http://192.168.0.153:3000'; // Change this to your actual server URL
 
   String? validateEmail(String? email) {
     if (email!.isEmpty) {
@@ -47,9 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
+      await DatabaseHelper.setLastSync(DateTime.now());
       setState(() {
         _isLoading = true;
-      });
+      }
+      );
 
       try {
         final response = await http.post(
@@ -61,24 +64,37 @@ class _LoginScreenState extends State<LoginScreen> {
           }),
         );
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200) 
+        {
+          
           final responseData = response.body;
           final token = responseData;
-          //final user = responseData['user'];
+            await DatabaseHelper.insertUser({
+    'id': 1,
+    'email': _email,
+    'token': token,
+  });
+        await DatabaseHelper.setLastSync(DateTime.now()); // 🟢 أضف هذا السطر فقط
+  //final user = responseData['user'];
 
           // Save token and user data to shared preferences or state management
           // For now, we'll just navigate to the main screen
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Login Successful! Welcome ${['test']}'),
+              content: Text('Login Successful! Welcome $_email'),
               backgroundColor: Colors.green,
             ),
           );
+          await DatabaseHelper.insertUser({ 'id': 1,  // facultatif mais peut éviter des doublons
+  'email': _email,
+  'token': token,});
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MainScreen()),
           );
-        } else {
+          
+        } 
+        else {
           final errorData = jsonDecode(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
