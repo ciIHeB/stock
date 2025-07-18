@@ -11,14 +11,7 @@ import 'package:trademasterapp/LoginPage.dart';
 import 'package:trademasterapp/splashcreen.dart';
 
 
-import 'package:trademasterapp/helpers/drift_database.dart';
-
-late AppDatabase database;
-
-void main() {
-  database = AppDatabase();
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
