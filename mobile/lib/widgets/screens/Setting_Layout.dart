@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
+ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:trademasterapp/widgets/Invoice_layout.dart';
-import 'package:trademasterapp/widgets/Main_Menu.dart';
-import 'package:trademasterapp/widgets/Setting_Menu.dart';
+import 'package:trademasterapp/widgets/screens/Invoice_layout.dart';
+import 'package:trademasterapp/widgets/menu/Main_Menu.dart';
+import 'package:trademasterapp/widgets/menu/Setting_Menu.dart';
 
 void main() => runApp(MyApp());
 

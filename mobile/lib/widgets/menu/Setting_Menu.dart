@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:trademasterapp/widgets/stock_page.dart';
 
-class MainMenu extends StatelessWidget {
-  const MainMenu({super.key});
+class SettingMenu extends StatelessWidget {
+  const SettingMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +11,7 @@ class MainMenu extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: const Color.fromARGB(255, 24, 100, 162),
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,17 +49,9 @@ class MainMenu extends StatelessWidget {
             ],
           ),
           const Divider(),
-          _buildDrawerItem(Icons.inventory, 'My Stock', context),
-          _buildDrawerItem(Icons.store, 'Stock', context),
-          _buildDrawerItem(Icons.receipt, 'Outstanding Invoice', context),
-          _buildDrawerItem(Icons.route, 'Start Journey', context),
-          _buildDrawerItem(Icons.shop, 'Stock Request', context), // Add this to navigate to InvoicePage
-          _buildDrawerItem(Icons.sync, 'Synchronization', context),
-          _buildDrawerItem(Icons.upload_file, 'Auto UnLoad', context),
-          _buildDrawerItem(Icons.cloud_upload, 'Upload Request', context),
-          _buildDrawerItem(Icons.file_upload, 'Manual Upload', context),
-          const Divider(),
-          _buildDrawerItem(Icons.logout, 'Sign out', context),
+          _buildDrawerItem(Icons.bolt, 'About', context),
+          _buildDrawerItem(Icons.settings, 'Setting', context),
+
         ],
       ),
     );
@@ -72,17 +62,11 @@ class MainMenu extends StatelessWidget {
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
-        if (title == 'Stock Request') {
-          Navigator.pushNamed(context, '/invoice'); // Navigate to InvoicePage
-        }
-        if (title == 'SETTING') {
-          Navigator.pushNamed(context, '/settingmenu');
-        }
-        if (title == 'Stock') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const StockPage()),
-          );
+        if (title == 'HOME') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context,'/dashboard'); // Navigate to InvoicePage
+        } else {
+          // Handle other navigation if needed
         }
       },
     );

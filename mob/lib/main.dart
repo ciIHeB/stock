@@ -8,7 +8,7 @@ import 'package:trademasterapp/widgets/menu/Main_Menu.dart';
 import 'package:trademasterapp/widgets/screens/Setting_Layout.dart';
 import 'package:trademasterapp/widgets/menu/Setting_Menu.dart';
 import 'package:trademasterapp/LoginPage.dart';
-import 'package:trademasterapp/splashscreen.dart';
+import 'package:trademasterapp/splashcreen.dart';
 
 
 void main() => runApp(MyApp());

@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:trademasterapp/services/auth_service.dart';
 
-class SettingMenu extends StatelessWidget {
-  const SettingMenu({super.key});
+class MainMenu extends StatelessWidget {
+  const MainMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +13,7 @@ class SettingMenu extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: const Color.fromARGB(255, 24, 100, 162),
             ),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,9 +51,12 @@ class SettingMenu extends StatelessWidget {
             ],
           ),
           const Divider(),
-          _buildDrawerItem(Icons.bolt, 'About', context),
-          _buildDrawerItem(Icons.settings, 'Setting', context),
-
+          _buildDrawerItem(Icons.inventory, 'My Stock', context),
+          _buildDrawerItem(Icons.add_shopping_cart, 'Stock Request', context),
+          _buildDrawerItem(Icons.route, 'Start Journey', context),
+          _buildDrawerItem(Icons.sync, 'Syncronisation', context),
+          const Divider(),
+          _buildDrawerItem(Icons.logout, 'Sign out', context),
         ],
       ),
     );
@@ -62,10 +67,27 @@ class SettingMenu extends StatelessWidget {
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
-        if (title == 'Setting') {
-          Navigator.pushNamed(context, '/invoice'); // Navigate to InvoicePage
-        } else {
-          // Handle other navigation if needed
+        if (title == 'SETTING') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/settingmenu');
+        } else if (title == 'HOME') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/dashboard');
+        } else if (title == 'My Stock') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/mystock');
+        } else if (title == 'Stock Request') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/stockrequest');
+        } else if (title == 'Start Journey') {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/startjourney');
+        } else if (title == 'Sign out') {
+          Navigator.pop(context);
+          // Clear user session and navigate to login
+          AuthService.logout().then((_) {
+            Navigator.pushReplacementNamed(context, '/login');
+          });
         }
       },
     );
