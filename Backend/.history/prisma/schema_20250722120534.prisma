@@ -1,0 +1,910 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GenCompany {
+  CompanyID             Int                 @id @default(autoincrement())
+  CompanyDescLan1       String
+  CompanyDescLan2       String?            
+  CompanyLogo           String?             
+  CompanyAddress        String?             
+  CompanyTel            String?             
+  CompanyFax            String?            
+  CompanyVatNumber      String?             
+  CompanyCreationDate   DateTime            
+  TaxApplicable         Boolean             @default(true)
+  LastUpdateDate        DateTime?           @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+  
+  invStore              InvStore[]
+  genSalesManager       GenSalesManager[]
+  genRegionalManager    GenRegionalManager[]
+  genAreaManager        GenAreaManager[]
+  genSupervisor         GenSupervisor[]
+  salCustomerClass      SalCustomerClass[]
+  salCustomer           SalCustomer[]
+  genBranch             GenBranch[]
+  genPaymentTerm      GenPaymentTerm[]
+  salCustomerCluster  SalCustomerCluster[]
+  invItemUnit         InvItemUnit[]
+  invItemUnitList     InvItemUnitList[]
+  invItemCategory     InvItemCategory[]
+  invItemCategory2     InvItemCategory2[]
+  invItemCategory3     InvItemCategory3[]
+  invItemStatus       InvItemStatus[]
+  invItem             InvItem[]
+  salGeoLevel         SalGeoLevel[]
+  salGeo              SalGeo[]   
+  salPriceList        SalPriceList[]  
+  hhRoute             HhRoute[]    
+  hhOwner             HhOwner[]  
+  hhUser              HhUser[]
+  hhOwnerItem         HhOwnerItem[]
+  invStoreTransaction  InvStoreTransaction[]
+  invAutoSRHeader       InvAutoSRHeader[]
+
+
+  @@map("genCompany")
+}
+
+model GenBank {
+  BankID            Int               @id @default(autoincrement())
+  BankLan1          String
+  BankLan2          String?
+  BankIsActive      Boolean           @default(true) 
+  BankCreationDate  DateTime?         
+  LastUpdateDate    DateTime?         @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  @@map("genBank")
+}
+
+
+model InvStoreType {
+  StoreTypeID           Int           @id @default(autoincrement())
+  StoreTypeDescLan1     String
+  StoreTypeDescLan2     String?
+  StoreTypeCreationDate DateTime?    
+  LastUpdateDate        DateTime?              @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+
+  invStore              InvStore[]
+
+  @@map("invStoreType")
+}
+
+model InvStore {
+  CompanyID         Int
+  BranchID          Int
+  StoreTypeID       Int
+  StoreID           Int       @id @default(autoincrement())
+  StoreDescLan1     String
+  StoreDescLan2     String?
+  StoreCreationDate DateTime?  
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID    Int?
+
+  hhOwner_StoreID           HhOwner[] @relation("StoreIDRelation")
+  hhOwner_OwnerDefaultWHID  HhOwner[] @relation("OwnerDefaultWHIDRelation")
+  invStoreTransaction       InvStoreTransaction[]
+  invAutoSRHeader           InvAutoSRHeader[]
+
+  // Define the relationships
+  genCompany        GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genBranch         GenBranch @relation(fields: [BranchID], references: [BranchID])
+  invStoreType      InvStoreType @relation(fields: [StoreTypeID], references: [StoreTypeID])
+
+  @@map("invStore")
+}
+
+model GenSalesManager {
+  CompanyID              Int
+  UserID                 Int       
+  SMID                   Int       @id @default(autoincrement())
+  SMNameLan1             String
+  SMNameLan2             String?
+  SMMobile               String?   
+  SMEmail                String?   
+  CanViewAllInfo         Boolean   @default(false) 
+  SMIsActive             Boolean   @default(true) 
+  SMCreationDate         DateTime? 
+  LastUpdateDate         DateTime?              @default(now())
+  LastUpdateByUserID     Int?
+  CreatedByUserID        Int?
+  // Define the relationship with GenCompany
+  genCompany             GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  hhuser                HhUser @relation(fields: [UserID], references: [HHUserID])
+
+  genRegionalManager     GenRegionalManager[]
+
+  @@map("genSalesManager")
+}
+
+model GenRegionalManager {
+  CompanyID          Int
+  UserID             Int       
+  RMID               Int       @id @default(autoincrement())
+  RMNameLan1         String
+  RMNameLan2         String?
+  RMMobile           String?   
+  RMEmail            String?   
+  SMID               Int
+  CanViewAllInfo     Boolean   @default(false) 
+  RMIsActive         Boolean   @default(true) 
+  RMCreationDate     DateTime?  
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+  // Define the relationships
+  genCompany         GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genSalesManager    GenSalesManager @relation(fields: [SMID], references: [SMID])
+  hhuser                HhUser @relation(fields: [UserID], references: [HHUserID])
+
+  genAreaManager     GenAreaManager[]
+
+  @@map("genRegionalManager")
+}
+
+model GenAreaManager {
+  CompanyID          Int
+  UserID             Int       
+  RMID               Int  
+  AMID               Int       @id @default(autoincrement())
+  AMNameLan1         String
+  AMNameLan2         String?
+  AMMobile           String?   
+  AMEmail            String?   
+  CanViewAllInfo     Boolean   @default(false) 
+  AMIsActive         Boolean   @default(true) 
+  AMCreationDate     DateTime? @map("AMCreationDate")
+  LastUpdateDate     DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID     Int?
+
+  // Define the relationships
+  genCompany         GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genRegionalManager GenRegionalManager @relation(fields: [RMID], references: [RMID])
+  hhuser                HhUser @relation(fields: [UserID], references: [HHUserID])
+
+  genSupervisor      GenSupervisor[]
+
+
+  @@map("genAreaManager")
+}
+
+model GenSupervisor {
+  CompanyID            Int
+  BranchID             Int
+  UserID               Int       
+  AMID                 Int       
+  SupervisorID         Int   @id @default(autoincrement())
+  SupervisorNameLan1   String
+  SupervisorNameLan2   String?
+  SupervisorMobile     String?   
+  SupervisorEmail      String?   
+  CanViewAllInfo       Boolean   @default(false) 
+  SupervisorIsActive   Boolean   @default(true) 
+  SupervisorCreationDate DateTime? 
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  hhRoute           HhRoute[]
+  hhOwner           HhOwner[]
+  invAutoSRHeader   InvAutoSRHeader[]
+
+  // Define the relationships
+  genCompany           GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genAreaManager       GenAreaManager @relation(fields: [AMID], references: [AMID])
+  genBranch            GenBranch @relation(fields: [BranchID], references: [BranchID])
+  hhuser                HhUser @relation(fields: [UserID], references: [HHUserID])
+
+ 
+  @@map("genSupervisor")
+}
+
+
+ranch {
+  CompanyID           Int     
+  Branmodel GenBchID            Int   @id  @default(autoincrement())
+  BranchDescLan1      String
+  BranchDescLan2      String?
+  BranchAddress       String?
+  BranchTel           String?
+  BranchFax           String?
+  BranchVatNo         String?
+  BranchCreationDate  DateTime @default(now())
+  BranchLongitude     Float?
+  BranchLatitude      Float?
+  LastUpdateDate      DateTime?              @default(now())
+  LastUpdateByUserID  Int?
+  CreatedByUserID     Int?
+
+  invStore            InvStore[]
+  genSupervisor       GenSupervisor[]
+  hhOwner             HhOwner[]
+  hhUser              HhUser[]
+  hhOwnerItem         HhOwnerItem[]
+  hhRoute             HhRoute[]
+  salCustomer         SalCustomer[]
+  invStoreTransaction InvStoreTransaction[]
+  // Define the relationships
+  genCompany         GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+
+
+  @@map("genBranch")
+}
+model GenPaymentMethod {
+  PaymentMethodID          Int       @id @default(autoincrement()) 
+  PaymentMethodLan1        String   
+  PaymentMethodLan2        String?   
+  PaymentMethodCreationDate DateTime @default(now()) 
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  @@map("genPaymentMethod")
+}
+model GenPaymentTerm {
+  CompanyID                    Int       
+  PaymentTermID                Int     @id @default(autoincrement())
+  PaymentTermLan1              String    
+  PaymentTermLan2              String?   
+  PaymentTermDueDays           Int       @default(0) 
+  PaymentTermHasAllowance      Boolean   @default(false) 
+  ApplyCheckAllowancePolicy    Boolean   @default(true)  
+  PaymentTermCreationDate      DateTime  @default(now()) 
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  
+  // Define the relationships
+  genCompany         GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  @@map("genPaymentTerm")          
+}
+model SalCustomerClass {
+  CompanyID         Int
+  ClassID           Int @id @default(autoincrement())
+  ClassDescLan1     String
+  ClassDescLan2     String?
+  ClassCreationDate DateTime @default(now()) 
+  IsActive          Boolean  @default(true) 
+  LastUpdateDate    DateTime?
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  salPriceList          SalPriceList[]
+  
+  
+
+  // Define the relationship with GenCompany
+  genCompany           GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  
+
+  @@map("salCustomerClass")
+}
+model SalCustomerType {
+  CustomerTypeID            Int   @id  @default(autoincrement())
+  CustomerTypeDescLan1      String   
+  CustomerTypeCreationDate  DateTime @default(now()) 
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  
+
+  @@map("salCustomerType")          
+}
+model SalCustomerHCategory {      
+  HCategoryID            Int  @id @default(autoincrement())     
+  HCategoryDescLan1      String    
+  HCategoryDescLan2      String?   
+  HCategoryCreationDate  DateTime  @default(now()) 
+  LastUpdateDate    DateTime?              @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  
+  @@map("salCustomerHCategory")  // Map to table name in database
+
+}
+model SalCustomerCluster {
+  CompanyID            Int         
+  ClusterID            Int      @id@default(autoincrement())  
+  ClusterDescLan1      String    
+  ClusterDescLan2      String?   
+  ClusterCreationDate  DateTime  @default(now()) 
+  LastUpdateDate    DateTime?    @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID   Int?
+
+  salCustomer           SalCustomer[]
+  // Define the relationship with GenCompany
+  genCompany           GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  @@map("salCustomerCluster")  
+}
+model SecUser {
+  UserGroupID                       Int
+  UserID                            Int              @id @default(autoincrement())
+  UserName                          String           
+  UserLoginPassword                 String           
+  UserForceToChangePassword         Boolean          
+  UserIsActive                      Boolean          
+  UserCreationDate                  DateTime
+  LastUpdateDate                    DateTime?        @default(now())
+  LastUpdateByUserID                Int?
+  CreatedByUserID                   Int?
+  secusergroup                         SecUserGroup        @relation(fields: [UserGroupID], references: [UserGroupID])
+
+  @@map("secUser")
+}
+
+model SecUserGroup {
+  UserGroupID             Int       @id @default(autoincrement())
+  UserGroupNameLan1       String    
+  UserGroupNameLan2       String    
+  UserGroupDescription    String    
+  UserGroupIsActive       Boolean  
+  LastUpdateDate          DateTime?        @default(now())
+  LastUpdateByUserID      Int?
+  CreatedByUserID         Int? 
+  secUser                 SecUser[]
+
+  @@map("secUserGroup")
+}
+model SalGeoLevel {
+  CompanyID             Int
+  GeoLevelID            Int  @id @default(autoincrement())
+  GeoLevelDescLan1      String
+  GeoLevelDescLan2      String?
+  GeoLevelCreationDate  DateTime  
+  LastUpdateDate        DateTime? @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+  salGeo                SalGeo[]
+
+  // Define the relationships
+  genCompany            GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+ @@map("salGeoLevel")
+}
+
+model SalGeo {
+  CompanyID          Int
+  GeoLevelID         Int
+  GeoID              Int @id @default(autoincrement())
+  GeoDescLan1        String
+  GeoDescLan2        String?
+  GeoCreationDate    DateTime  
+  LastUpdateDate     DateTime? @default(now())
+  LastUpdateByUserID Int?
+  CreatedByUserID    Int? 
+
+
+  salCustomer SalCustomer[]
+
+  // Define the relationships
+  salGeoLevel        SalGeoLevel @relation(fields: [GeoLevelID], references: [GeoLevelID])
+  genCompany            GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+@@map("salGeo")
+
+}
+model SalCustomer {
+  CompanyID                   Int      
+  BranchID                    Int
+  CustomerTypeID              Int   @default(1)
+  CustomerID                  Int      @id @default(autoincrement())
+  CustomerDescLan1            String
+  CustomerDescLan2            String?
+  CustomerBarcode             String
+  ClassID                     Int
+  GeoID                       Int
+  HCategoryID                 Int
+  ClusterID                   Int
+  CustomerContactPerson       String?
+  CustomerMobile              String?
+  TaxApplicable               Boolean  @default(false)
+  CurrencyID                  Int      @default(1)
+  PaymentMethodID             Int      @default(1)
+  CustomerCreditLimit         Decimal  @default(0)
+  PaymentTermID               Int      @default(0)
+  CustomerMinCheck            Decimal  @default(0)
+  CustomerMaxCheck            Decimal  @default(0)
+  AllowOverCreditLimit        Boolean  @default(true)
+  AllowOverCreditDue          Boolean  @default(true)
+  AllowOverCheckLimit         Boolean  @default(true)
+  CustomerIsActive            Boolean  @default(true)
+  Longitude                   Decimal  @default(0)
+  Latitude                    Decimal  @default(0)
+  CustomerCreationDate        DateTime 
+  AllowTakingPhotos           Boolean  @default(true)
+  CustomerLastUpdateTime      DateTime? @default(now())
+  OwnerID                     Int?
+  CustomerEngagementLimit     Decimal  @default(0)
+  CustomerInformation         String?
+  CustomerImage               String?
+  CustomerAddress             String?
+  CommercialRegistrationNumber String?
+  CreatedByUserID             Int?
+  UpdatedByUserID             Int?
+
+  hhRouteCustomer         HhRouteCustomer[] 
+
+  // Define the relationships
+  genCompany                GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  salCustomerClass          SalCustomerClass @relation(fields: [ClassID], references: [ClassID])
+  salCustomerType           SalCustomerType @relation(fields: [CustomerTypeID], references: [CustomerTypeID])
+  salCustomerCluster        SalCustomerCluster @relation(fields: [ClusterID] , references: [ClusterID] )
+  salCustomerHCategory      SalCustomerHCategory @relation(fields: [HCategoryID] , references: [HCategoryID] )
+  genPaymentTerm            GenPaymentTerm  @relation(fields: [PaymentTermID] , references: [PaymentTermID] )
+  genPaymentMethod          GenPaymentMethod  @relation(fields: [PaymentMethodID] , references: [PaymentMethodID] )
+  salGeo                    SalGeo? @relation(fields: [GeoID], references: [GeoID])
+  genBranch                 GenBranch @relation(fields: [BranchID] , references: [BranchID] )
+  genCurrency               GenCurrency @relation(fields: [CurrencyID] , references: [CurrencyID] )
+  @@map("salCustomer")
+}
+model GenCurrency {
+  CurrencyID                Int      @id @default(autoincrement())
+  CurrencyNameLan1          String   
+  CurrencyNameLan2          String?  
+  CurrencySymbol            String   
+  CurrencyLastConvRate      Float    
+  CurrencyLastConvRateDate  DateTime? 
+  CurrencyCreationDate      DateTime 
+  IsActive                  Boolean  @default(true) 
+  LastUpdateDate            DateTime? @default(now())
+  LastUpdateByUserID        Int?
+  CreatedByUserID           Int?
+
+  salCustomer               SalCustomer[]
+
+  @@map("genCurrency")
+
+}
+model InvItemKind {
+  ItemKindID   Int     @id @default(autoincrement())
+  ItemKindLan1 String  
+  ItemKindLan2 String? 
+  ItemKindCreationDate      DateTime 
+  IsActive                  Boolean  @default(true)
+  LastUpdateDate            DateTime? @default(now())
+  LastUpdateByUserID        Int?
+  CreatedByUserID           Int?
+
+  invItem               InvItem[]
+
+  @@map("invItemKind")
+}
+
+model InvItemUnit {
+  CompanyID                 Int     
+  ItemUnitID                Int      @id @default(autoincrement()) 
+  ItemUnitDescLan1          String   
+  ItemUnitDescLan2          String?  
+  ItemUnitCreationDate      DateTime  
+  IsActive                  Boolean  @default(true)
+  LastUpdateDate            DateTime @default(now())
+  LastUpdateByUserID        Int?
+  CreatedByUserID           Int?
+
+  invItemUnitList           InvItemUnitList[]
+  hhOwnerItem               HhOwnerItem[]
+
+
+
+  // Define the relationships
+  genCompany        GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  
+  @@map("invItemUnit")
+}
+model InvItemUnitList {
+  CompanyID               Int      
+  ItemUnitListID          Int      @id @default(autoincrement()) 
+  ItemUnitListDescLan1    String   
+  ItemUnitListDescLan2    String?  
+  ItemUnitID              Int      
+  ItemPackSize            Int      @default(1) 
+  ItemUnitListCreationDate DateTime 
+  IsActive                  Boolean  @default(true)
+  LastUpdateDate            DateTime @default(now())
+  LastUpdateByUserID        Int?
+  CreatedByUserID           Int?
+
+  invItem               InvItem[]
+  salPriceList          SalPriceList[]
+
+
+  // Define the relationships
+  genCompany              GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  invItemUnit             InvItemUnit @relation(fields: [ItemUnitID], references: [ ItemUnitID])
+
+  
+  @@map("invItemUnitList")
+}
+model InvItemCategory {
+  CompanyID             Int        
+  ItemCategoryID        Int        @id @default(autoincrement()) 
+  CategoryDescLan1      String     
+  CategoryDescLan2      String?    
+  CategoryCreationDate  DateTime  
+  IsActive              Boolean    @default(true)
+  LastUpdateDate        DateTime   @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+
+
+  invItem               InvItem[]
+
+  // Define the relationships
+  genCompany              GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  @@map("invItemCategory")
+}
+model InvItemCategory2 {
+  CompanyID             Int       
+  ItemCategory2ID        Int        @id @default(autoincrement()) 
+  CategoryDescLan1      String     
+  CategoryDescLan2      String?    
+  CategoryCreationDate  DateTime   
+  IsActive              Boolean    @default(true)
+  LastUpdateDate        DateTime   @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+
+
+  invItem               InvItem[]
+
+  // Define the relationships
+  genCompany              GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  @@map("invItemCategory2")
+}
+model InvItemCategory3 {
+  CompanyID             Int        
+  ItemCategory3ID        Int        @id @default(autoincrement()) 
+  CategoryDescLan1      String     
+  CategoryDescLan2      String?    
+  CategoryCreationDate  DateTime  
+  IsActive              Boolean    @default(true)
+  LastUpdateDate        DateTime   @default(now())
+  LastUpdateByUserID    Int?
+  CreatedByUserID       Int?
+
+
+  invItem               InvItem[]
+
+  // Define the relationships
+  genCompany              GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  @@map("invItemCategory3")
+}
+model InvItemStatus {
+  CompanyID                           Int      
+  ItemStatusID                        Int      @id @default(autoincrement()) 
+  ItemStatusDescLan1                  String   
+  ItemStatusDescLan2                  String?  
+  ItemStatusIsActive                  Boolean  @default(true) 
+  ItemStatusCreationDate              DateTime 
+  ItemStatusMustUseAC                 Boolean  @default(false) 
+  LastUpdateDate                      DateTime   @default(now())
+  LastUpdateByUserID                  Int?
+  CreatedByUserID                     Int?
+
+  // Define the relationships
+  genCompany              GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+
+  @@map("invItemStatus")
+}
+
+
+model InvItem {
+  CompanyID                     Int       
+  ItemKindID                    Int       
+  ItemCategoryID                Int  
+  ItemCategory2ID                Int
+  ItemCategory3ID                Int 
+  ItemID                        Int       @id @default(autoincrement()) 
+  ItemNameLan1                  String    
+  ItemNameLan2                  String?   
+  ItemUnitListID                Int       
+  ItemBarcode                   String?   
+  ItemImage                     String?    
+  ItemCreationDate              DateTime  @default(now())
+  ItemIsActive                  Boolean   @default(true)
+  ItemNearExpiryPeriod          Int?      
+  IsProductionItem              Boolean   @default(true)
+  LastUpdateDate                DateTime? 
+  LastUpdateByUserID            Int?      
+  CreatedByUserID               Int?     
+
+  salPriceList        SalPriceList[] 
+  hhOwnerItem         HhOwnerItem[] 
+  invStoreTransaction  InvStoreTransaction[]  
+  invAutoSRDetail      InvAutoSRDetail[]   
+
+
+
+  // Define the relationships
+  genCompany                    GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  invItemCategory               InvItemCategory @relation(fields: [ItemCategoryID], references: [ItemCategoryID])
+  invItemCategory2               InvItemCategory2 @relation(fields: [ItemCategory2ID], references: [ItemCategory2ID])
+  invItemCategory3               InvItemCategory3 @relation(fields: [ItemCategory3ID], references: [ItemCategory3ID])
+  invItemKind                   InvItemKind     @relation(fields: [ItemKindID], references: [ItemKindID])
+  invItemUnitList               InvItemUnitList @relation(fields: [ItemUnitListID], references: [ItemUnitListID])
+  
+
+
+  @@map("invItem")
+}
+model SalPriceList {
+  CompanyID                      Int      
+  ClassID                        Int      
+  ItemID                         Int  @id
+  ItemCost                       Float  @default(-1) 
+  PListSellPrice1                Float  @default(-1) 
+  PListSellPrice2                Float  @default(-1) 
+  PListReturnPrice1              Float  @default(-1) 
+  PListReturnPrice2              Float  @default(-1) 
+  PListSellingDefaultUnit        Int      @default(1) 
+  PListCreationDate              DateTime 
+  PListLastUpdateDate            DateTime? @default(now()) 
+  PListCreatedByUserID           Int    
+  PListLastUpdateByUserID        Int     
+
+
+ 
+  // Define the relationships
+  genCompany                    GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  invItem                       InvItem          @relation(fields: [ItemID], references: [ItemID])
+  salCustomerClass              SalCustomerClass @relation(fields: [ClassID], references: [ClassID])
+  invItemUnitList               InvItemUnitList @relation(fields: [PListSellingDefaultUnit], references: [ItemUnitListID])
+
+  @@map("salPriceList")
+}
+model HhRoute {
+  CompanyID               Int       
+  BranchID                Int       
+  RouteID                 Int       @id @default(autoincrement())
+  RouteDescLan1           String    @map("RouteDescLan1")
+  RouteDescLan2           String?   @map("RouteDescLan2")
+  RouteCreationDate       DateTime 
+  OwnerID                 Int 
+  SupervisorID            Int      
+  IsActive                Boolean   @default(true) 
+  RouteLastUpdateTime     DateTime  @default(now())
+  RouteLastUpdateByUserID Int?      
+  RouteCreatedByUserID    Int?     
+
+  hhRouteCustomer         HhRouteCustomer[] 
+  hhOwner                 HhOwner @relation(fields: [OwnerID], references: [OwnerID]) // Added for explicit relation
+
+  // Define the relationships
+  genCompany                    GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genSupervisor                 GenSupervisor @relation(fields: [SupervisorID], references: [SupervisorID])
+  genBranch                     GenBranch @relation(fields: [BranchID], references: [BranchID])
+
+  @@map("hhRoute")
+}
+model HhRouteCustomer {  
+  RouteID          Int    
+  CustomerID       Int    
+  CustomerSequence Int    @default(1) 
+
+  @@id([RouteID, CustomerID])
+  
+
+  hhRoute       HhRoute  @relation(fields: [RouteID], references: [RouteID], onDelete: Cascade)
+  salCustomer   SalCustomer @relation(fields: [CustomerID], references: [CustomerID])
+
+  @@map("hhRouteCustomer")
+}
+model HhOwner {
+  CompanyID                             Int      
+  BranchID                              Int      
+  SupervisorID                          Int      
+  OwnerID                               Int       @id @default(autoincrement()) 
+  UserID                                Int
+  OwnerDescLan1                         String   
+  OwnerDescLan2                         String?  
+  StoreID                               Int      @default(1)
+  DefaultPrinterID                      Int?     
+  OwnerAutoSynchMode                    Boolean  @default(false) 
+  OwnerMaxStockVal                      Decimal  @default(0) 
+  OwnerIsActive                         Boolean  @default(true) 
+  OwnerCreationDate                     DateTime 
+  OwnerDefaultWHID                      Int     
+  OwnerCreditLimitValue                 Decimal  @default(0) 
+  OwnerACKey                            Int?     
+  OwnerImage                            String?   
+  OwnerLastUpdateTime                   DateTime @default(now())
+  CreatedByUserID                       Int?     
+  LastUpdatedByUserID                   Int?   
+
+  hhOwnerItem                   HhOwnerItem[]  
+  invAutoSRHeader               InvAutoSRHeader[]
+  hhRoutes                      HhRoute[] // Added for explicit reverse relation
+
+  // Define the relationships
+  genCompany                    GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genSupervisor                 GenSupervisor @relation(fields: [SupervisorID], references: [SupervisorID])
+  genBranch                     GenBranch @relation(fields: [BranchID], references: [BranchID])
+  hhUser                        HhUser @relation(fields: [UserID], references: [HHUserID])
+  invStore_StoreID              InvStore @relation("StoreIDRelation", fields: [StoreID], references: [StoreID])
+  invStore_OwnerDefaultWHID     InvStore @relation("OwnerDefaultWHIDRelation", fields: [OwnerDefaultWHID], references: [StoreID])
+  
+  @@map("hhOwner")
+}
+
+model HhOwnerItem {
+  CompanyID                      Int
+  BranchID                       Int
+  OwnerID                        Int
+  ItemID                         Int
+  MinQty                         Int      @default(0)
+  MaxQty                         Int      @default(-1)
+  RecommendedQty                 Int      @default(-1)
+  ViewInSales                    Boolean  @default(true)
+  ViewInReturn                   Boolean  @default(true)
+  ViewInPricing                  Boolean  @default(true)
+  ViewInOrderTaking              Boolean  @default(true)
+  ViewInOrderDelivery            Boolean  @default(true)
+  DefaultUnitID                  Int
+  ViewInStockRequest             Boolean  @default(true)
+  ViewInStocktaking              Boolean  @default(true)
+  ViewInTarget                   Boolean  @default(true)
+  CreationDate                   DateTime @default(now()) 
+  LastUpdateTime                 DateTime @default(now())
+  CreatedByUserID                Int?     
+  LastUpdatedByUserID            Int?     
+  
+  // Define the relationships
+  genCompany                     GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genBranch                      GenBranch @relation(fields: [BranchID], references: [BranchID])
+  hhOwner                        HhOwner     @relation(fields: [OwnerID], references: [OwnerID])
+  invItem                        InvItem     @relation(fields: [ItemID], references: [ItemID])
+  invItemUnit                    InvItemUnit @relation(fields: [DefaultUnitID], references: [ItemUnitID])
+  
+  @@id([ OwnerID, ItemID])
+  @@map("hhOwnerItem")
+}
+
+model HhUser {
+  CompanyID                      Int      
+  BranchID                       Int      
+  HHUserID                       Int      @id @default(autoincrement())
+  HHUserDescLan1                 String   
+  HHUserDescLan2                 String?  
+  HHUserName                     String   
+  HHUserPassword                 String   
+  HHUserIsActive                 Boolean  @default(true) 
+  HHUserCreationDate             DateTime 
+  HHUserLastUpdateTime           DateTime @default(now())
+  CreatedByUserID                Int?     
+  LastUpdatedByUserID            Int?     
+
+  genAreaManager        GenAreaManager[]
+  genSalesManager       GenSalesManager[]
+  genRegionalManager    GenRegionalManager[]
+  genSupervisor         GenSupervisor[]
+  hhOwner               HhOwner[]
+  invStoreTransaction   InvStoreTransaction[]
+
+  // Define the relationships
+  genCompany                     GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genBranch                      GenBranch @relation(fields: [BranchID], references: [BranchID])
+  
+
+  @@map("hhUser")
+}
+model InvStoreTransaction {
+  CompanyID                      Int
+  BranchID                       Int
+  StoreTransactionID             BigInt    @id @default(autoincrement())
+  UserID                         Int
+  DocumentTypeID                 Int
+  DocumentID                     Int
+  StoreID                        Int
+  ItemID                         Int
+  ItemStatusID                   Int
+  ItemQty                        Int
+  DocumentRefNumber              String?
+  TransactionDateInt             Int
+  TransactionDate                DateTime  @default(now())
+
+
+  // Define the relationships
+  genCompany                     GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  genBranch                      GenBranch @relation(fields: [BranchID], references: [BranchID])
+  hhUser                        HhUser      @relation(fields: [UserID], references: [HHUserID])
+  invStore                       InvStore     @relation(fields: [StoreID], references: [StoreID])
+  invItem                        InvItem     @relation(fields: [ItemID], references: [ItemID])
+  
+  @@map("invStoreTransaction")
+}
+model InvAutoSRHeader {
+  CompanyID            Int
+  SupervisorID         Int
+  OwnerID              Int
+  WHID                 Int
+  SRNumber             String    @unique
+  SRTypeID             Int
+  AutoSRLoadDate       DateTime
+  AutoSRDate           DateTime
+  AutoSRStatus         String
+  AutoSRID             Int       @id @default(autoincrement())
+ 
+
+  // Define the relationships
+  genCompany           GenCompany @relation(fields: [CompanyID], references: [CompanyID])
+  hhOwner              HhOwner @relation(fields: [OwnerID], references: [OwnerID])
+  genSupervisor        GenSupervisor @relation(fields: [SupervisorID], references: [SupervisorID])
+  invStore             InvStore @relation(fields: [WHID], references: [StoreID])
+  invAutoSRDetail      InvAutoSRDetail[]
+
+  @@map("invAutoSRHeader")
+}
+
+
+model InvAutoSRDetail {
+  SRNumber                       String
+  ItemID                         Int
+  ItemStatusID                   Int        @default(0)
+  SRTypeID                       Int
+  ItemUnitID                     Int
+  AutoSRQty                      Int
+  AutoSRSupervisorQty            Int?
+  AutoSRLoadQty                  Int
+  AutoSRLoadDate                 DateTime
+  AutoSRDate                     DateTime
+  AutoSRStatus                   String
+ 
+
+  // Define the relationships
+  invItem                        InvItem @relation(fields: [ItemID], references: [ItemID])
+  invAutoSRHeader                InvAutoSRHeader? @relation(fields: [SRNumber], references: [SRNumber])
+
+
+  @@id([ SRNumber, ItemID, ItemStatusID])
+  @@map("invAutoSRDetail")
+}
+model invBOStoreLoad {
+  StoreID                  Int
+  LoadType                Int
+  LoadID                  Int @default(autoincrement())
+  LoadDocumentNumber      String
+  UserID                  Int
+  LoadStatusID            String     @db.Char(1)
+  LoadCreationDate        DateTime
+  TotalReceivedQuantityCost    Float
+  ItemID                  Int
+  ItemStatus              Int
+  ReceivedQuantity        Int
+
+  @@id([LoadID, LoadType, ItemID])
+  @@map("invBOStoreLoad")
+}

@@ -72,6 +72,26 @@ const createOwner = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+  const getOwnerByUserId = async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const owner = await prisma.hhOwner.findFirst({
+        where: {
+          UserID: userId,
+          OwnerIsActive: true,
+        },
+      });
+      if (owner) {
+        res.status(200).json(owner);
+      } else {
+        res.status(404).json({ error: 'Owner not found for this user' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  };
   
  const getOwnerById = async (req, res) => {
     try {
@@ -163,6 +183,7 @@ const createOwner = async (req, res) => {
   
 module.exports.createOwner=createOwner;
 module.exports.getOwners=getOwners;
+module.exports.getOwnerByUserId=getOwnerByUserId;
 module.exports.getOwnerById=getOwnerById;
 module.exports.updateOwner=updateOwner;
 module.exports.deleteOwner=deleteOwner;

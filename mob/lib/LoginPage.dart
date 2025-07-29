@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Update this URL to match your backend server
   static const String baseUrl =
-      'http://192.168.106.1:3000'; // Change this to your actual server URL
+      'http://192.168.0.153:3000'; // Change this to your actual server URL
 
   String? validateEmail(String? email) {
     if (email!.isEmpty) {
@@ -48,53 +48,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      await DatabaseHelper.setLastSync(DateTime.now());
       setState(() {
         _isLoading = true;
-      }
-      );
+      });
 
       try {
-        final response = await http.post(
-          Uri.parse('$baseUrl/api/mobileauth/login'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'HHUserName': _email,
-            'HHUserPassword': _password,
-          }),
-        );
+        print('Attempting login for user: $_email');
 
-        if (response.statusCode == 200) 
-        {
-          
-          final responseData = response.body;
-          final token = responseData;
-            await DatabaseHelper.insertUser({
-    'id': 1,
-    'email': _email,
-    'token': token,
-  });
-        await DatabaseHelper.setLastSync(DateTime.now()); // 🟢 أضف هذا السطر فقط
-  //final user = responseData['user'];
+        // Try to connect to backend first
+        final response = await http
+            .post(
+              Uri.parse('$baseUrl/api/mobileauth/login'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({
+                'HHUserName': _email,
+                'HHUserPassword': _password,
+              }),
+            )
+            .timeout(const Duration(seconds: 10));
 
-          // Save token and user data to shared preferences or state management
-          // For now, we'll just navigate to the main screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Login Successful! Welcome $_email'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          await DatabaseHelper.insertUser({ 'id': 1,  // facultatif mais peut éviter des doublons
-  'email': _email,
-  'token': token,});
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-          );
-          
-        } 
-        else {
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          await _handleSuccessfulLogin(response.body);
+        } else {
           final errorData = jsonDecode(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -104,12 +82,17 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } catch (e) {
+        print('Backend connection failed, attempting offline login: $e');
+        // Backend is not available, do not allow offline login
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Connection error: ${e.toString()}'),
+          const SnackBar(
+            content: Text(
+                'Cannot login while offline. Please connect to the internet.'),
             backgroundColor: Colors.red,
           ),
         );
+        // Optionally, you can return here to prevent further execution
+        return;
       } finally {
         setState(() {
           _isLoading = false;
@@ -117,6 +100,79 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+  Future<void> _handleSuccessfulLogin(String responseBody) async {
+    String token;
+    Map<String, dynamic>? owner;
+
+    try {
+      // Try to parse as JSON first (new format)
+      final responseData = jsonDecode(responseBody);
+      token = responseData['token'];
+      owner = responseData['owner'];
+      print('Parsed as JSON successfully');
+      print('Owner data: $owner');
+    } catch (e) {
+      // If JSON parsing fails, treat as old format (just token string)
+      print('JSON parsing failed, treating as token string: $e');
+      token = responseBody;
+      owner = null;
+
+      // Try to get owner info separately using the token
+      try {
+        final ownerResponse = await http.get(
+          Uri.parse('$baseUrl/api/test/owner/1'),
+          headers: {'Content-Type': 'application/json'},
+        );
+
+        if (ownerResponse.statusCode == 200) {
+          final ownerData = jsonDecode(ownerResponse.body);
+          if (ownerData['success']) {
+            owner = ownerData['owner'];
+            print('Got owner data separately: $owner');
+          }
+        }
+      } catch (ownerError) {
+        print('Failed to get owner data separately: $ownerError');
+      }
+    }
+
+    final userData = {
+      'id': 1,
+      'email': _email,
+      'token': token,
+      'ownerName': owner != null ? owner['OwnerDescLan1'] : 'Test Owner',
+      'ownerID': owner != null ? owner['OwnerID'] : 1,
+    };
+
+    print('Saving user data: $userData');
+    await DatabaseHelper.insertUser(userData);
+
+    // Also save owner info specifically
+    if (owner != null) {
+      await DatabaseHelper.saveOwnerInfo(
+          owner['OwnerDescLan1'], owner['OwnerID']);
+    } else {
+      await DatabaseHelper.saveOwnerInfo('Test Owner', 1);
+    }
+
+    await DatabaseHelper.setLastSync(DateTime.now());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            'Login Successful! Welcome ${owner != null ? owner['OwnerDescLan1'] : 'Test Owner'}'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainScreen()),
+    );
+  }
+
+  // Offline login is disabled. No _handleOfflineLogin method.
 
   @override
   Widget build(BuildContext context) {

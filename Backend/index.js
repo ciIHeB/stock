@@ -44,6 +44,7 @@ const createLoad = require('./routes/InvBOStoreLoad.routes');
 const createUnload = require('./routes/InvBOStoreUnload.routes'); // Added for Unload
 const invAutoSRHeader = require('./routes/invAutoSRHeader.routes'); 
 const invStoreTransaction = require('./routes/invStoreTransaction.routes');
+const testRoutes = require('./routes/test.routes');
 
 
 const app = express();
@@ -94,6 +95,7 @@ app.use('/api/BoStoreLoad', createLoad);
 app.use('/api/BoStoreUnload', createUnload);
 app.use('/api/AutoLoad', invAutoSRHeader);
 app.use('/api/stock', invStoreTransaction);
+app.use('/api/test', testRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

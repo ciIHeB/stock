@@ -47,6 +47,25 @@ console.log('user:', userExist)
 
         if (!verifiedPassword)
             return res.status(403).send("wrong username or password");
+        
+        // Find the owner associated with this user
+        console.log('Looking for owner with UserID:', userExist.HHUserID);
+        const owner = await prisma.hhOwner.findFirst({
+            where: {
+                UserID: userExist.HHUserID,
+                OwnerIsActive: true,
+            },
+        });
+        console.log('Owner found:', owner ? 'Yes' : 'No');
+        if (owner) {
+            console.log('Owner details:', {
+                OwnerID: owner.OwnerID,
+                OwnerDescLan1: owner.OwnerDescLan1,
+                OwnerDescLan2: owner.OwnerDescLan2,
+                UserID: owner.UserID
+            });
+        }
+
         const token = jwt.sign(
             {
                 exp: Math.floor(Date.now() / 1000) + 60 * 60,
@@ -59,7 +78,19 @@ console.log('user:', userExist)
         );
        // console.log(token);
        console.log('user loggin in')
-        return res.status(200).send(token);
+       
+       // Return both token and owner information
+       const responseData = {
+           token: token,
+           owner: owner ? {
+               OwnerID: owner.OwnerID,
+               OwnerDescLan1: owner.OwnerDescLan1,
+               OwnerDescLan2: owner.OwnerDescLan2,
+               UserID: owner.UserID
+           } : null
+       };
+       
+        return res.status(200).json(responseData);
     } catch (err) {
         console.error(err);
         return err;

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:trademasterapp/services/auth_service.dart';
+import 'package:trademasterapp/helpers/database_helper.dart';
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});
@@ -84,9 +85,11 @@ class MainMenu extends StatelessWidget {
           Navigator.pushNamed(context, '/startjourney');
         } else if (title == 'Sign out') {
           Navigator.pop(context);
-          // Clear user session and navigate to login
+          // Clear user session and local database, then navigate to login
           AuthService.logout().then((_) {
-            Navigator.pushReplacementNamed(context, '/login');
+            DatabaseHelper.deleteUser().then((_) {
+              Navigator.pushReplacementNamed(context, '/login');
+            });
           });
         }
       },
