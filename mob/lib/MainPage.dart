@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'QRScannerPage.dart';
 import 'package:trademasterapp/widgets/menu/Main_Menu.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:trademasterapp/helpers/database_helper.dart';
@@ -162,29 +161,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             ),
             child: IconButton(
               icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => QRScannerPage(),
-                  ),
-                );
-                if (result != null) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('QR Code Result'),
-                      content: Text(result.toString()),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('OK'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
+              onPressed: () {},
             ),
           ),
           Container(
