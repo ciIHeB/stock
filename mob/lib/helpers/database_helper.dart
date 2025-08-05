@@ -51,12 +51,9 @@ class DatabaseHelper {
           CREATE TABLE owners (
             ownerID INTEGER PRIMARY KEY,
             ownerName TEXT NOT NULL,
-            OwnerDefaultWHID INTEGER,
-      
-            
+            OwnerDefaultWHID INTEGER
           )
         ''');
-        
 
         await db.execute('''
         CREATE TABLE items (

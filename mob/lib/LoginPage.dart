@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Update this URL to match your backend server
   static const String baseUrl =
-      'http://192.168.0.153:3000'; // Change this to your actual server URL
+      'http://192.168.0.2:3000'; // Change this to your actual server URL
 
   String? validateEmail(String? email) {
     if (email!.isEmpty) {

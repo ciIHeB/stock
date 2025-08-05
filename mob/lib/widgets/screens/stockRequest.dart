@@ -137,12 +137,13 @@ class _StockRequestState extends State<StockRequest> {
                   const Icon(Icons.home, color: Colors.white, size: 22),
                   const SizedBox(width: 8),
                   Text(
-                    'branch_name',
+                    // branch_name ( storedesclan1),
+                     'branch_name ',
                     style: GoogleFonts.roboto(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                    ),
+                    )
                   ),
                 ],
               ),
@@ -483,6 +484,29 @@ class _StockRequestState extends State<StockRequest> {
                     ],
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 2,
+              ),
+              onPressed: () {
+                // TODO:  details here go to invAutoSRDetails
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Purchase applied!')),
+                );
+              },
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text(
+                'Apply Purchase', 
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           ],

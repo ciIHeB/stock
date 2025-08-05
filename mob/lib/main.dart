@@ -10,6 +10,8 @@ import 'package:trademasterapp/widgets/menu/Setting_Menu.dart';
 import 'package:trademasterapp/LoginPage.dart';
 import 'package:trademasterapp/splashcreen.dart';
 import 'package:trademasterapp/widgets/screens/stockRequest.dart';
+import 'package:trademasterapp/widgets/screens/stock.dart';
+import 'package:trademasterapp/widgets/screens/journeyplan.dart';
 
 
 void main() => runApp(MyApp());
@@ -30,7 +32,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/splashscreen': (context) => SplashScreen(),
         '/stockrequest': (context) => StockRequest(),
-
+        '/mystock': (context) => StockPage(),
+        '/journeyplan': (context) => JourneyPlanPage(),
       },
     );
   }

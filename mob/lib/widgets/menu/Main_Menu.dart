@@ -82,7 +82,14 @@ class MainMenu extends StatelessWidget {
           Navigator.pushNamed(context, '/stockrequest');
         } else if (title == 'Start Journey') {
           Navigator.pop(context);
-          Navigator.pushNamed(context, '/startjourney');
+          Navigator.pushNamed(context, '/journeyplan');
+        } else if (title == 'Syncronisation') {
+          Navigator.pop(context);
+          DatabaseHelper.setLastSync(DateTime.now()).then((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Synchronization complete!')),
+            );
+          });
         } else if (title == 'Sign out') {
           Navigator.pop(context);
           // Clear user session and local database, then navigate to login
